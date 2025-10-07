@@ -1,11 +1,17 @@
 *
 !*/
+
+# whitelist all folders except these two
+/.next
+/node_modules
+
 !.gitignore
 !/.gitmodules
 !/.gitattributes
 
 # dev
-/.next
+!/.env.example
+!/.env.test
 !/.vscode/*.json
 !/.editorconfig
 !/.prettierrc
@@ -13,9 +19,10 @@
 !/eslint.config.mjs
 !/next.config.ts
 !/tsconfig.json
+!/components.json
+!/vitest.config.mts
 
 # pnpm
-/node_modules
 !/package.json
 !/pnpm-lock.yaml
 
@@ -28,3 +35,8 @@
 # public
 !/public/**/*.svg
 !/public/**/*.png
+!/public/**/*.wasm
+
+# doc
+!/book.toml
+!/src/**/*.md

@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Login() {
+export default function AuthLayout({
+	children,
+}: Readonly<{
+	children: React.ReactNode;
+}>) {
 	return (
 		<>
 			<header>
@@ -17,7 +21,7 @@ export default function Login() {
 							Login
 						</Link>{" "}
 						<Link
-							href={"/sign-up"}
+							href={"/register"}
 							className="inline-block rounded-md px-3 py-2 bg-foreground text-background"
 						>
 							Register
@@ -26,14 +30,8 @@ export default function Login() {
 				</nav>
 			</header>
 			<main className="w-full grid grid-cols-1 md:grid-cols-2 min-h-[calc(100vh-72px)]">
-				<Image
-					src="next.svg"
-					alt="login aside image"
-					width={600}
-					height={600}
-					className="mx-auto my-auto p-4"
-				/>
-				<section className="bg-background-dimmed">Login</section>
+				<Image src="globe.svg" alt="" width={600} height={600} loading="eager" className="mx-auto my-auto p-4" />
+				<section className="bg-background-dimmed">{children}</section>
 			</main>
 			<footer></footer>
 		</>

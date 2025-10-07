@@ -27,14 +27,21 @@ export default function Home() {
 									Login
 								</Link>{" "}
 								<Link
-									href={"/sign-up"}
+									href={"/register"}
 									className="inline-block rounded-md px-3 py-2 bg-foreground text-background"
 								>
 									Register
 								</Link>
 							</div>
 						</div>
-						<Image src="globe.svg" alt="" width={600} height={600} className="mx-auto" />
+						<Image
+							src="globe.svg"
+							alt=""
+							width={600}
+							height={600}
+							loading="eager"
+							className="mx-auto"
+						/>
 					</div>
 				</section>
 				<section className="w-full bg-background">
