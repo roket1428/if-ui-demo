@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { LoginRequestSchema, LoginRequest } from "@/lib/auth/schemas";
 import { generateKeyPairs, saveKeyPair } from "@/lib/auth/crypto";
@@ -20,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function LoginForm() {
+	const router = useRouter();
 	const form = useForm<LoginRequest>({
 		resolver: zodResolver(LoginRequestSchema),
 		defaultValues: {
@@ -41,16 +43,18 @@ export default function LoginForm() {
 									{ secretKey: subSecretKey, publicKey: subPublicKey },
 									values.remember_me ? 24 * 30 : 1
 								);
-
-								// zeroing
+								console.log("login successful");
+								router.replace("/profile");
+							})
+							.catch((error) => {
+								console.error("login failed:", error);
+							})
+							.finally(() => {
 								seed.fill(0);
 								mainSecretKey.fill(0);
 								mainPublicKey.fill(0);
 								subSecretKey.fill(0);
 								subPublicKey.fill(0);
-							})
-							.catch((error) => {
-								console.error("login failed:", error);
 							});
 					})
 					.catch((error) => {

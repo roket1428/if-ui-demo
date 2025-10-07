@@ -36,7 +36,7 @@ export async function sendRegisterRequest(
 
 export async function sendSeedRequest(email: string) {
 	const response = await sendRequest("auth/ask_seed", { mail: email }, SeedResponseSchema);
-	return new Uint8Array(response.seed);
+	return new Uint8Array(response.Ok.seed);
 }
 
 export async function sendNewSessionRequest(

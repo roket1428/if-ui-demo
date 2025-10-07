@@ -14,7 +14,7 @@ export const RegisterRequestSchema = z.object({
 });
 
 export const RegisterResponseSchema = z.object({
-	id: z.number(),
+	Ok: z.object({ id: z.number() }),
 });
 
 export const LoginRequestSchema = z.object({
@@ -26,7 +26,7 @@ export const LoginRequestSchema = z.object({
 });
 
 export const LoginResponseSchema = z.object({
-	id: z.number(),
+	Ok: z.object({ id: z.number() }),
 });
 
 export const SeedRequestSchema = z.object({
@@ -36,7 +36,9 @@ export const SeedRequestSchema = z.object({
 });
 
 export const SeedResponseSchema = z.object({
-	seed: z.array(z.number().min(0).max(255)).length(SEED_LEN),
+	Ok: z.object({
+		seed: z.array(z.number().min(0).max(255)).length(SEED_LEN),
+	}),
 });
 
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;

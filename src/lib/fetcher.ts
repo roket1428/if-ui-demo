@@ -150,7 +150,11 @@ async function sendJSONRequest<T>(
 	validateJSONResponse(response);
 
 	if (responseSchema) {
-		return responseSchema.parse(await response.json());
+		const responseText = await response.clone().text();
+		const responseData = await response.json();
+		console.log("Response text:", responseText);
+		console.log("Response json:", responseData);
+		return responseSchema.parse(responseData);
 	}
 }
 
@@ -208,7 +212,11 @@ async function sendSignedJSONRequest<T>(
 	validateSignedJSONResponse(response);
 
 	if (responseSchema) {
-		return responseSchema.parse(await response.json());
+		const responseText = await response.clone().text();
+		const responseData = await response.json();
+		console.log("Response text:", responseText);
+		console.log("Response json:", responseData);
+		return responseSchema.parse(responseData);
 	}
 }
 
@@ -229,7 +237,11 @@ function validateSignedJSONResponse(response: Response) {
 
 function checkContentType(msg: Request | Response) {
 	const contentType = msg.headers.get("Content-Type");
-	if (!contentType || !contentType.includes("application/json")) {
+	if (
+		!contentType ||
+		(!contentType.includes("application/json") &&
+			!contentType.includes("application/octet-stream"))
+	) {
 		throw new TypeError("Unexpected content type: " + contentType);
 	}
 }

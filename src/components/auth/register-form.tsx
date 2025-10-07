@@ -37,18 +37,18 @@ export default function RegisterForm() {
 				sendRegisterRequest(values.name, values.email, seed, mainPublicKey, subPublicKey)
 					.then(() => {
 						saveKeyPair({ secretKey: subSecretKey, publicKey: subPublicKey }, 1);
-
-						// zeroing
+						console.log("registration successful");
+						router.replace("/profile");
+					})
+					.catch((error) => {
+						console.error("registration failed:", error);
+					})
+					.finally(() => {
 						seed.fill(0);
 						mainSecretKey.fill(0);
 						mainPublicKey.fill(0);
 						subSecretKey.fill(0);
 						subPublicKey.fill(0);
-
-						router.replace("/profile");
-					})
-					.catch((error) => {
-						console.error("registration failed:", error);
 					});
 			})
 			.catch((error) => {
