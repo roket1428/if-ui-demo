@@ -1,3 +1,4 @@
+import GuestPingButton from "@/components/tests/guest-ping-button";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -19,19 +20,26 @@ export default function Home() {
 								with others and discover new products and services. Import your projects to allow
 								access to the community and grow your reputation.
 							</p>
-							<div>
+							<div className="flex gap-x-2">
 								<Link
 									href={"/login"}
 									className="inline-block rounded-md px-3 py-2 bg-green-600 text-foreground"
 								>
 									Login
-								</Link>{" "}
+								</Link>
 								<Link
 									href={"/register"}
 									className="inline-block rounded-md px-3 py-2 bg-foreground text-background"
 								>
 									Register
 								</Link>
+								<Link
+									href={"/profile"}
+									className="inline-block rounded-md px-3 py-2 bg-foreground text-background"
+								>
+									Profile (protected route)
+								</Link>
+								<GuestPingButton />
 							</div>
 						</div>
 						<Image

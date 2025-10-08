@@ -1,5 +1,5 @@
 import { createAuthState } from "@/lib/auth/utils";
-import { externalAPI } from "@/lib/fetcher";
+import { externalAPI, filterForwardedHeaders } from "@/lib/fetcher";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -7,14 +7,12 @@ export async function POST(request: NextRequest) {
 	console.log("Request headers:", request.headers);
 	console.log("Request body:", await request.clone().text());
 
-	const forwardHeaders = {
-		"Content-Type": request.headers.get("Content-Type") || "application/json",
-	};
-	console.log("Forwarding headers:", forwardHeaders);
+	const forwardedHeaders = filterForwardedHeaders(request.headers);
+	console.log("Forwarding headers:", forwardedHeaders);
 
 	const externalResponse = await fetch(externalAPI("auth/register"), {
 		method: "POST",
-		headers: forwardHeaders,
+		headers: forwardedHeaders,
 		body: request.body,
 		// @ts-expect-error nodejs fetch requires duplex half for streaming body
 		duplex: "half",

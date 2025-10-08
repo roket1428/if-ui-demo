@@ -5,14 +5,6 @@ import { z } from "zod";
 // TODO: write tests
 type CommunicationMedium = "json" | "binary";
 
-export async function sendRequest(
-	endpoint: string,
-	body: object,
-	responseSchema: null,
-	useInternalAPI?: boolean,
-	communicationMedium?: CommunicationMedium
-): Promise<void>;
-
 export async function sendRequest<T>(
 	endpoint: string,
 	body: object,
@@ -20,6 +12,14 @@ export async function sendRequest<T>(
 	useInternalAPI?: boolean,
 	communicationMedium?: CommunicationMedium
 ): Promise<T>;
+
+export async function sendRequest(
+	endpoint: string,
+	body: object,
+	responseSchema: null,
+	useInternalAPI?: boolean,
+	communicationMedium?: CommunicationMedium
+): Promise<void>;
 
 export async function sendRequest<T>(
 	endpoint: string,
@@ -48,17 +48,6 @@ export async function sendRequest<T>(
 	}
 }
 
-export async function sendSignedRequest(
-	endpoint: string,
-	body: object,
-	responseSchema: null,
-	useInternalAPI?: boolean,
-	customHeader?: { [key: string]: string },
-	extendHeader?: boolean,
-	customSecretKey?: Uint8Array,
-	communicationMedium?: CommunicationMedium
-): Promise<void>;
-
 export async function sendSignedRequest<T>(
 	endpoint: string,
 	body: object,
@@ -69,6 +58,17 @@ export async function sendSignedRequest<T>(
 	customSecretKey?: Uint8Array,
 	communicationMedium?: CommunicationMedium
 ): Promise<T>;
+
+export async function sendSignedRequest(
+	endpoint: string,
+	body: object,
+	responseSchema: null,
+	useInternalAPI?: boolean,
+	customHeader?: { [key: string]: string },
+	extendHeader?: boolean,
+	customSecretKey?: Uint8Array,
+	communicationMedium?: CommunicationMedium
+): Promise<void>;
 
 export async function sendSignedRequest<T>(
 	endpoint: string,
@@ -117,7 +117,6 @@ export async function sendSignedRequest<T>(
 }
 
 // json request abstractions
-
 async function sendJSONRequest<T>(
 	endpoint: string,
 	body: object,
@@ -150,23 +149,9 @@ async function sendJSONRequest<T>(
 	validateJSONResponse(response);
 
 	if (responseSchema) {
-		const responseText = await response.clone().text();
-		const responseData = await response.json();
-		console.log("Response text:", responseText);
-		console.log("Response json:", responseData);
-		return responseSchema.parse(responseData);
+		return response.json().then((data) => responseSchema.parse(data));
 	}
 }
-
-async function sendSignedJSONRequest(
-	endpoint: string,
-	body: object,
-	responseSchema: null,
-	useInternalAPI?: boolean,
-	customHeader?: { [key: string]: string },
-	extendHeader?: boolean,
-	customSecretKey?: Uint8Array
-): Promise<void>;
 
 async function sendSignedJSONRequest<T>(
 	endpoint: string,
@@ -177,6 +162,16 @@ async function sendSignedJSONRequest<T>(
 	extendHeader?: boolean,
 	customSecretKey?: Uint8Array
 ): Promise<T>;
+
+async function sendSignedJSONRequest(
+	endpoint: string,
+	body: object,
+	responseSchema: null,
+	useInternalAPI?: boolean,
+	customHeader?: { [key: string]: string },
+	extendHeader?: boolean,
+	customSecretKey?: Uint8Array
+): Promise<void>;
 
 async function sendSignedJSONRequest<T>(
 	endpoint: string,
@@ -212,11 +207,7 @@ async function sendSignedJSONRequest<T>(
 	validateSignedJSONResponse(response);
 
 	if (responseSchema) {
-		const responseText = await response.clone().text();
-		const responseData = await response.json();
-		console.log("Response text:", responseText);
-		console.log("Response json:", responseData);
-		return responseSchema.parse(responseData);
+		return response.json().then((data) => responseSchema.parse(data));
 	}
 }
 
@@ -271,4 +262,22 @@ export function internalAPI(endpoint: string) {
 
 function getSubPublicKeyHeader() {
 	return { "if-subkey": bytesToBase64(retrievePublicKey()) };
+}
+
+export async function parseRequest<T>(request: Request, schema: z.ZodSchema<T>): Promise<T> {
+	const contentType = request.headers.get("Content-Type");
+	if (contentType) {
+		if (contentType.includes("application/json")) {
+			return request.json().then((data) => schema.parse(data));
+		}
+		//TODO: handle other types
+	}
+	throw new TypeError("Unsupported content type: " + (contentType ?? "null"));
+}
+
+export function filterForwardedHeaders(headers: Headers) {
+	const disallowedHeaders = ["host", "cookie", "if-ug"];
+	return Object.fromEntries(
+		headers.entries().filter(([header]) => !disallowedHeaders.includes(header.toLowerCase()))
+	);
 }

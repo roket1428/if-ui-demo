@@ -12,10 +12,11 @@ export function getAuthState(cookieStore: Awaited<ReturnType<typeof cookies>>) {
 /**
  * server-side only
  */
-export async function createAuthState(response: NextResponse) {
+export async function createAuthState(response: NextResponse, expiryInHours: number = 1) {
 	const cookieValue = await generateAuthCookie();
 	response.cookies.set("auth", cookieValue, {
 		httpOnly: true,
+		maxAge: expiryInHours * 60 * 60,
 		secure: process.env.NODE_ENV === "production",
 		sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
 	});

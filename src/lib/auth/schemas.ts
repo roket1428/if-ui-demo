@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { MIN_HUMAN_NAME_LEN, MAX_HUMAN_NAME_LEN, MAX_EMAIL_LEN, SEED_LEN } from "./consts";
+import {
+	MIN_HUMAN_NAME_LEN,
+	MAX_HUMAN_NAME_LEN,
+	MAX_EMAIL_LEN,
+	SEED_LEN,
+	ED25519_KEY_LEN,
+} from "./consts";
 
 export const RegisterRequestSchema = z.object({
 	name: z
@@ -25,6 +31,11 @@ export const LoginRequestSchema = z.object({
 	remember_me: z.boolean(),
 });
 
+export const LoginRequestSchemaInternalAPI = z.object({
+	remember_me: z.boolean(),
+	sub_pubkey: z.array(z.number().min(0).max(255)).length(ED25519_KEY_LEN),
+});
+
 export const LoginResponseSchema = z.object({
 	Ok: z.object({ id: z.number() }),
 });
@@ -41,9 +52,20 @@ export const SeedResponseSchema = z.object({
 	}),
 });
 
+export const PingRequestSchema = z.object({
+	ping: z.string().nonempty(),
+});
+
+export const PingResponseSchema = z.object({
+	Ok: z.object({ pong: z.string() }),
+});
+
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 export type RegisterResponse = z.infer<typeof RegisterResponseSchema>;
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
+export type LoginRequestInternalAPI = z.infer<typeof LoginRequestSchemaInternalAPI>;
 export type LoginResponse = z.infer<typeof LoginResponseSchema>;
 export type SeedRequest = z.infer<typeof SeedRequestSchema>;
 export type SeedResponse = z.infer<typeof SeedResponseSchema>;
+export type PingRequest = z.infer<typeof PingRequestSchema>;
+export type PingResponse = z.infer<typeof PingResponseSchema>;
